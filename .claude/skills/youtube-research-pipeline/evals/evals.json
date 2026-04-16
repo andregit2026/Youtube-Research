@@ -1,0 +1,47 @@
+{
+  "skill_name": "youtube-research-pipeline",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I want to research AI agents and how they're being used in enterprise software right now. Use the YouTube research pipeline. My analysis goal is: I want to understand what the top practitioners are saying are the biggest challenges and limitations when deploying AI agents in production enterprise environments.",
+      "expected_output": "A markdown research report saved to a .md file and printed in chat. Should include: a table of 10 YouTube videos with full metadata (title, channel, views, duration, upload date, engagement ratio, URL), a NotebookLM analysis section answering the challenges/limitations question, and a search metadata section. No deliverable requested so no deliverable section.",
+      "files": [],
+      "expectations": [
+        "A .md report file is created and saved to disk",
+        "The report contains a YouTube Sources section with at least 5 videos listed with URLs",
+        "The report contains a properly filled Search Metadata table",
+        "The report contains an Analysis section with substantive content answering the challenges/limitations question",
+        "No deliverable section is present (user did not request one)",
+        "Each YouTube source entry includes channel name, view count, and engagement ratio"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Run the YouTube research pipeline for me. Topic: Retrieval Augmented Generation (RAG) best practices. I want the analysis to cover: what are the most important architectural decisions when building a RAG system and why do most RAG implementations fail in production? Also generate flashcards for me so I can study this later.",
+      "expected_output": "A complete markdown research report with YouTube sources, analysis on RAG architecture decisions and failure modes, plus flashcards generated and downloaded. The report should reference the deliverable file path.",
+      "files": [],
+      "expectations": [
+        "A .md report file is created and saved to disk",
+        "The report contains a YouTube Sources section with at least 5 videos listed",
+        "The report contains an Analysis section addressing both RAG architectural decisions and production failure modes",
+        "The report contains a Deliverable section referencing flashcards",
+        "A flashcard file (e.g., .md or .json) is generated and downloaded",
+        "The search metadata table includes 'Deliverable generated: Yes'"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Hey can you use the youtube pipeline to research 'prompt engineering techniques for LLMs' - I'm trying to get a handle on which techniques are actually proven to work versus the ones that are just hype. Analysis goal: compare and contrast chain-of-thought, few-shot, and self-consistency prompting based on what practitioners and researchers are actually reporting in terms of real-world effectiveness. Make me an infographic too.",
+      "expected_output": "A markdown research report on prompt engineering with YouTube sources, an analysis comparing the three prompting techniques, an infographic deliverable generated, and search metadata. The report should be written in markdown and saved to disk.",
+      "files": [],
+      "expectations": [
+        "A .md report file is created and saved to disk",
+        "The report contains a YouTube Sources section with video metadata",
+        "The Analysis section directly addresses chain-of-thought, few-shot, and self-consistency prompting",
+        "The report contains a Deliverable section referencing an infographic",
+        "An infographic file is generated via notebooklm",
+        "The full report content is also printed inline in the chat response"
+      ]
+    }
+  ]
+}

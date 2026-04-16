@@ -1,0 +1,50 @@
+{
+  "skill_name": "youtube-search",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Search YouTube for 'python tutorial for beginners' and show me the top results from the last 6 months.",
+      "expected_output": "A formatted list of YouTube videos about Python tutorials. Each result should include title, channel name, subscriber count, view count, duration, upload date, URL, and engagement ratio. Results should be separated by dividers. Numbers should be human-readable (e.g. 1.2M, 450K).",
+      "files": [],
+      "assertions": [
+        "The output shows at least 5 video results",
+        "Each result includes a title and a YouTube URL",
+        "Each result shows a channel name and subscriber count",
+        "Each result shows views and duration",
+        "Each result shows an upload date",
+        "Numbers are formatted with K/M/B suffixes (human-readable)",
+        "Results are visually separated by divider lines",
+        "An engagement ratio (views/subscribers) is shown for each result",
+        "The output mentions the search query and time window"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Use yt-dlp to find the top 10 YouTube videos about 'AI coding agents' from the last 3 months. Show me the engagement metrics.",
+      "expected_output": "Top 10 YouTube videos about AI coding agents from the last 3 months. Should use --count 10 --months 3 flags. Output should include engagement ratio (views/subscribers) for each video, formatted numbers, and dividers between results.",
+      "files": [],
+      "assertions": [
+        "The output shows at most 10 results",
+        "The --months 3 flag (or equivalent logic) is used to filter to 3 months",
+        "Each result includes an engagement ratio",
+        "The search query relates to AI coding agents or similar",
+        "Results are separated by divider lines",
+        "YouTube URLs are included for each result"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Find YouTube videos about 'sourdough bread recipe' from the past year. I want to see which channels have the best engagement.",
+      "expected_output": "YouTube search results for sourdough bread recipe videos, filtered to the last 12 months (--months 12). Results should show engagement ratios so the user can compare channel performance. Output nicely formatted with human-readable numbers.",
+      "files": [],
+      "assertions": [
+        "The output contains YouTube video results about sourdough or bread",
+        "The time filter is set to approximately 12 months",
+        "Engagement ratios are shown for each result",
+        "Channel names and subscriber counts are displayed",
+        "View counts are shown in human-readable format",
+        "The output is formatted with dividers between each result"
+      ]
+    }
+  ]
+}
