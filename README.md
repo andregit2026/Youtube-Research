@@ -1,246 +1,223 @@
-# YouTube Research Skills for Claude Code
+# youtube-research
 
-Three Claude Code skills that work together as a fully automated YouTube research pipeline: search YouTube → load videos into NotebookLM → AI analysis → styled HTML report.
+Deutschsprachiges Plugin-Bundle für Claude Code, das drei aufeinander abgestimmte
+Skills zu einer vollständigen YouTube-Recherche-Pipeline kombiniert.
+
+---
+
+## Die drei Skills im Überblick
 
 ```
-youtube-search  ──►  youtube-research-pipeline  ──►  notebooklm
-  (find videos)         (orchestrate pipeline)       (AI analysis + output)
+youtube-search          →  youtube-research-pipeline  ←  notebooklm
+(Videos finden)             (Orchestrierung)              (KI-Analyse)
+```
+
+| Skill | Aufgabe |
+|-------|---------|
+| **youtube-search** | Sucht YouTube mit `yt-dlp`, liefert strukturierte Ergebnisse mit Metadaten (Aufrufe, Abonnenten, Dauer, Engagement-Verhältnis) |
+| **notebooklm** | Automatisiert Google NotebookLM - lädt Quellen, stellt Fragen, generiert Deliverables (Podcast, Quiz, Karteikarten, Infografik usw.) |
+| **youtube-research-pipeline** | Orchestriert den gesamten Ablauf: Suche starten, Ergebnisse filtern, in NotebookLM laden, KI-Analyse durchführen, Markdown- und HTML-Bericht erstellen |
+
+### Wie die Skills zusammenarbeiten
+
+```
+Nutzeranfrage
+     |
+     v
+[youtube-search]
+  - Führt yt-dlp-Suche durch (--count 10 --months 24)
+  - Filtert Business-/Hustle-Videos heraus
+  - Liefert Titel, URL, Kanal, Aufrufe, Engagement
+     |
+     v
+[notebooklm]
+  - Erstellt Notizbuch oder verwendet vorhandenes
+  - Fügt alle Video-URLs als Quellen hinzu (--wait)
+  - Stellt die Analysefrage des Nutzers
+  - Generiert optionales Deliverable (Karteikarten, Quiz etc.)
+     |
+     v
+[youtube-research-pipeline]
+  - Fasst alles zusammen
+  - Schreibt Markdown-Bericht nach Output/<thema>-recherchebericht.md
+  - Generiert HTML-Bericht nach Output/JJJJMMTT_<thema>.html
+  - Öffnet den HTML-Bericht im Browser
 ```
 
 ---
 
-## Skills
+## Voraussetzungen
 
-### `youtube-search`
-Search YouTube using `yt-dlp` and return structured results with metadata and an **engagement ratio** (views ÷ subscribers) — a signal for viral reach beyond a channel's existing audience.
-
-**Invoke with:** *"Search YouTube for X"*, *"Find the top videos about Y from the last 3 months"*, *"What's everyone watching about Z on YouTube?"*
-
-### `youtube-research-pipeline`
-End-to-end research pipeline: YouTube search → NotebookLM notebook → AI analysis → ranked HTML report with foldable transcript key points. Handles the entire workflow from a single prompt.
-
-**Invoke with:** *"Research [topic] using YouTube"*, *"Find and analyze YouTube videos about X"*, *"YouTube research pipeline for Y"*
-
-### `notebooklm`
-Automate Google NotebookLM via the `notebooklm-py` CLI and Python API. Create notebooks, add sources (URLs, PDFs, YouTube videos, Google Drive), run Q&A, and generate podcasts, quizzes, flashcards, slide decks, infographics, mind maps, reports, and more.
-
-**Invoke with:** *"Create a NotebookLM notebook from these sources"*, *"Generate a podcast from my docs"*, *"Make flashcards from this research"*, *"Ask NotebookLM about X"*
-
----
-
-## Prerequisites
-
-| Requirement | Install |
-|---|---|
-| [Claude Code](https://claude.ai/code) | Download the desktop app or CLI |
-| Python 3.9+ | [python.org](https://www.python.org) |
-| `yt-dlp` | `pip install yt-dlp` |
-| `notebooklm-py` | `pip install notebooklm-py "notebooklm-py[browser]"` |
-| Playwright (Chromium) | `playwright install chromium` |
-| Google account | For NotebookLM authentication |
-
----
-
-## Installation
-
-### 1. Clone the repo
-
-```bash
-git clone https://github.com/andregit2026/Youtube-Research.git
-cd Youtube-Research
-```
-
-### 2. Copy the skills to Claude Code
-
-Skills must live inside a `.claude/skills/` directory that Claude Code walks up from your working directory (or in your global user-level config).
-
-**Option A — Copy to your project:**
-```bash
-# From inside your project folder
-cp -r /path/to/Youtube-Research/.claude/skills/youtube-search         .claude/skills/
-cp -r /path/to/Youtube-Research/.claude/skills/youtube-research-pipeline .claude/skills/
-cp -r /path/to/Youtube-Research/.claude/skills/notebooklm              .claude/skills/
-```
-
-**Option B — Copy to your global user-level skills (available in ALL projects):**
-```bash
-# macOS / Linux
-cp -r .claude/skills/youtube-search         ~/.claude/skills/
-cp -r .claude/skills/youtube-research-pipeline ~/.claude/skills/
-cp -r .claude/skills/notebooklm              ~/.claude/skills/
-
-# Windows (Git Bash)
-cp -r .claude/skills/youtube-search         ~/AppData/Roaming/Claude/skills/
-cp -r .claude/skills/youtube-research-pipeline ~/AppData/Roaming/Claude/skills/
-cp -r .claude/skills/notebooklm              ~/AppData/Roaming/Claude/skills/
-```
-
-> **Tip:** Global installation (Option B) is recommended — the skills then work in every Claude Code session without copying files per project.
-
-### 3. Install Python dependencies
+### Python-Pakete installieren
 
 ```bash
 pip install yt-dlp
-pip install notebooklm-py "notebooklm-py[browser]"
+pip install notebooklm-py
+pip install "notebooklm-py[browser]"
 playwright install chromium
 ```
 
-### 4. Authenticate with NotebookLM (one-time)
+### NotebookLM einmalig authentifizieren
 
 ```bash
 notebooklm login
 ```
 
-This opens a Chromium browser window. Log in with your Google account. Credentials are saved to `~/.notebooklm/storage_state.json` and reused automatically from then on.
+Ein Chromium-Fenster öffnet sich. Mit dem Google-Konto anmelden. Die
+Anmeldedaten werden unter `~/.notebooklm/storage_state.json` gespeichert
+und bei allen späteren Befehlen automatisch verwendet.
 
----
+### Installation prüfen
 
-## Quick Start
-
-Once installed, just talk to Claude Code naturally — it detects and invokes the right skill automatically.
-
-### Search YouTube
-
-```
-Search YouTube for "Claude Code tutorials" from the last 3 months, top 15 results
-```
-
-Claude will run the search and return a formatted table with views, duration, channel size, upload date, and engagement ratio for each video.
-
-### Full research pipeline (search + analysis + HTML report)
-
-```
-Research "Claude Code" using YouTube — I want to understand the latest
-features and what developers are actually building with it.
-Give me the top 10 videos from the last 6 months.
-```
-
-Claude will:
-1. Search YouTube and find the top 10 videos
-2. Create a NotebookLM notebook and add all videos as sources
-3. Ask NotebookLM your analysis question
-4. Write a ranked HTML report (`Output/YYYYMMDD_<topic>.html`) with:
-   - All videos ranked by content depth (not view count)
-   - Click-to-expand key points from each transcript
-   - Newest features section
-   - Coverage gaps section
-
-### NotebookLM directly
-
-```
-Create a NotebookLM notebook from these 3 PDFs and generate a podcast from them
-```
-
-```
-Add this YouTube video to my existing notebook and ask it: what are the main
-techniques demonstrated?
-```
-
-```
-Generate flashcards from the current notebook, download them as markdown
+```bash
+yt-dlp --version
+notebooklm status
 ```
 
 ---
 
-## How the Pipeline Works
+## Verwendung in Claude Code
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    youtube-research-pipeline                         │
-│                                                                      │
-│  1. YouTube Search (yt-dlp)                                         │
-│     └─ search_youtube.py → top N videos with metadata + engagement  │
-│                                                                      │
-│  2. NotebookLM Setup                                                 │
-│     └─ create notebook (or reuse existing) → add all video URLs     │
-│                                                                      │
-│  3. AI Analysis                                                      │
-│     └─ notebooklm ask "..." --json → extract key points per video   │
-│                                                                      │
-│  4. HTML Report (Python generator script)                            │
-│     └─ YYYYMMDD_<topic>.html                                         │
-│        ├─ Sticky top nav                                             │
-│        ├─ Header + meta pills + section jump buttons                 │
-│        ├─ Ranked table (click row → expand transcript key points)    │
-│        ├─ Newest Features section                                    │
-│        └─ Gaps & Criticisms section                                  │
-└─────────────────────────────────────────────────────────────────────┘
-```
+Das Bundle wird automatisch ausgelöst, wenn die Anfrage eine Kombination aus
+YouTube-Suche und Analyse enthält. Typische Trigger-Phrasen:
 
-### Engagement Ratio
+- "Recherchiere [Thema] mit YouTube"
+- "Nutze die YouTube-Recherche-Pipeline für [Thema]"
+- "Finde und analysiere YouTube-Videos über [Thema]"
+- "YouTube + NotebookLM: [Thema]"
+- "Ich möchte über [Thema] aus YouTube-Videos lernen"
 
-The search skill calculates `views ÷ subscribers` for every video:
-
-| Ratio | What it means |
-|---|---|
-| `> 1.0×` | Video spread beyond the channel's existing audience — strong recommendation signal |
-| `0.1 – 1.0×` | Normal performance |
-| `< 0.1×` | Underperformed for this channel |
-| `N/A` | Subscriber count not available (small/private channel) |
-
-### Ranking Philosophy
-
-Videos in the HTML report are ranked by **content depth and insight quality**, not by raw view count. A 5-minute video with 1M views that covers a topic superficially ranks below a 30-minute deep-dive with 50K views. The ranking rationale note in the report explains the methodology with a concrete example.
+Für reine Videosuche ohne Analyse wird nur `youtube-search` ausgelöst.
+Für reine NotebookLM-Aufgaben (z.B. Podcast aus PDFs) wird nur `notebooklm` ausgelöst.
+Die Pipeline-Skill verbindet beide für end-to-end-Recherche.
 
 ---
 
-## Output Files
+## Beispiel - Claude Code auf YouTube recherchieren
 
-All output is saved to an `Output/` folder in your working directory:
-
-| File | Description |
-|---|---|
-| `YYYYMMDD_<topic>.html` | Styled HTML research report (self-contained, dark theme) |
-| `gen_<topic>.py` | Python generator script that produced the HTML (re-runnable) |
-| `yt_<topic>.json` | Raw yt-dlp search results |
-| `notebooklm_response.json` | Raw NotebookLM analysis JSON |
-
----
-
-## Repo Structure
+### Anfrage an Claude Code
 
 ```
-.claude/
-└── skills/
-    ├── youtube-search/
-    │   ├── SKILL.md                   ← Skill instructions for Claude
-    │   ├── scripts/
-    │   │   └── search_youtube.py      ← yt-dlp wrapper script
-    │   └── evals/
-    │       └── evals.json
-    ├── youtube-research-pipeline/
-    │   ├── SKILL.md
-    │   └── evals/
-    │       └── evals.json
-    └── notebooklm/
-        └── SKILL.md
+Was gibt es Neues bei Claude Code & Opus 4.7 auf YouTube — letzte 2 Wochen
+(10.-24. April 2026)? Analysiere die aktuellsten Videos und fasse zusammen,
+welche neuen Features, Workflows und Community-Reaktionen es gibt.
+```
+
+### Was Claude Code dann tut
+
+**Schritt 1 - YouTube-Suche**
+
+```bash
+python youtube-search/scripts/search_youtube.py "Claude Code Opus 4.7" --count 48 --months 1
+```
+
+Beispiel-Ergebnisse (gefiltert, Business-Content entfernt):
+
+```
+#01  Claude Code & Opus 4.7 - Everything New in Two Weeks
+      Channel:    Fireship  (2.8M subscribers)
+      Views:      504.9K   Duration: 1:36:00   Uploaded: Apr 24, 2026
+      Engagement: 3.09x
+      URL:        https://www.youtube.com/watch?v=...
+
+#02  Claude Code Tips - Apr 10-24 2026
+      Channel:    Theo - t3.gg  (320K subscribers)
+      Views:      770K     Duration: 0:42:11   Uploaded: Apr 22, 2026
+      Engagement: 1.12x
+      URL:        https://www.youtube.com/watch?v=...
+...
+```
+
+**Schritt 2 - NotebookLM-Notizbuch erstellen**
+
+```bash
+notebooklm create "Claude Code & Opus 4.7 - Apr 10-24 2026"
+notebooklm use <notizbuch_id>
+notebooklm source add https://www.youtube.com/watch?v=... --wait
+# (für alle 48 Videos wiederholt)
+```
+
+**Schritt 3 - KI-Analyse**
+
+```bash
+notebooklm ask "Was sind die wichtigsten neuen Features, Workflows und \
+Community-Reaktionen zu Claude Code & Opus 4.7 in den letzten 2 Wochen?" --json \
+> Output/notebooklm_response.json
+```
+
+**Schritt 4 - Bericht erstellen**
+
+Claude Code schreibt automatisch:
+- `Output/20260424_claude_code_2weeks.md` - vollständiger Markdown-Bericht
+- `Output/20260424_claude_code_2weeks.html` - visueller HTML-Bericht (dunkel, interaktiv)
+
+### Auszug aus dem generierten Bericht
+
+```markdown
+# Claude Code & Opus 4.7 - YouTube Analysis
+
+Two weeks of Apr 10-24, 2026
+
+**Datum:** 24.04.2026
+**Analyseziel:** Neue Features, Workflows und Community-Reaktionen
+**NotebookLM-Notizbuch:** abc123...
+
+## YouTube-Quellen
+
+| # | Titel | Kanal | Aufrufe | Engagement | URL |
+|---|-------|-------|---------|------------|-----|
+| 1 | Claude Code & Opus 4.7 - Everything New... | Fireship | 504.9K | 3.09x | Link |
+| 2 | Claude Code Tips Apr 10-24 2026 | Theo - t3.gg | 770K | 1.12x | Link |
+...
+
+## Analyse
+
+Die analysierten Videos der letzten zwei Wochen zeigen:
+
+1. **Opus 4.7 deutlich stärker bei komplexen Aufgaben** - Community-Konsens:
+   Opus 4.7 loest mehrstufige Coding-Tasks zuverlaessiger als Vorgaenger...
+2. **Claude Code als vollstaendiger Entwicklungspartner** - Videos zeigen,
+   wie Teams komplette Features ohne manuelle Code-Reviews deployen...
+3. **3.5M Gesamtaufrufe in 2 Wochen** - Hoechstes Engagement aller bisherigen
+   Claude-Releases laut Kanal-Statistiken...
+
+## Suchmetadaten
+
+| Feld | Wert |
+|------|------|
+| Suchanfrage | Claude Code Opus 4.7 |
+| Abgerufene Ergebnisse | 48 |
+| Zeitfenster | 10.-24. April 2026 (2 Wochen) |
+| Gesamtaufrufe | 3.5M |
+```
+
+### Vorschau - HTML-Bericht
+
+Der generierte HTML-Bericht ist ein interaktiver Dark-Mode-Report mit Engagement-Metriken,
+Videoranking, KI-Analyse und optionalen Deliverables (Karteikarten, Quiz, Podcast usw.).
+
+![Beispiel HTML-Bericht](assets/output-example.png)
+
+---
+
+## Ordnerstruktur
+
+```
+youtube-research/
+├── SKILL.md                              - Einstiegspunkt, Routing-Tabelle
+├── README.md                             - Diese Datei
+├── scripts/
+│   └── search_youtube.py                 - yt-dlp Suchskript
+└── references/
+    ├── youtube-search.md                 - YouTube-Suchanleitung
+    ├── youtube-research-pipeline.md      - Pipeline-Orchestrierung (Deutsch)
+    ├── html-design-system.md             - CSS/Layout/Toggle-JS fuer HTML-Berichte
+    └── notebooklm.md                     - NotebookLM CLI-Anleitung
 ```
 
 ---
 
-## Troubleshooting
+## Autor
 
-**`yt-dlp` returns no results or times out**
-- Try widening the time window: `--months 24` instead of `--months 6`
-- Reduce `--count` if fetching 50+ results is slow
-- Wait a few minutes and retry if you get bot-detection errors — do not retry in a tight loop
-
-**`notebooklm login` fails or credentials expire**
-- Delete `~/.notebooklm/storage_state.json` and run `notebooklm login` again
-
-**`UnicodeEncodeError` on Windows with emoji in video titles**
-- Always pass `--json` to `notebooklm` commands and write output to a file:
-  `notebooklm ask "..." --json > output.json`, then parse with `open(..., encoding="utf-8")`
-
-**NotebookLM `source add` fails for a video**
-- Private, age-restricted, or unavailable videos cannot be indexed
-- Skip and continue — the pipeline logs which sources failed
-
-**`notebooklm-py` API errors after a package update**
-- Run `pip install --upgrade notebooklm-py` — the upstream API changes occasionally
-
----
-
-## License
-
-MIT — free to use, modify, and share.
+André Rausch - [andre.rausch@infomotion.de](mailto:andre.rausch@infomotion.de)  
+INFOMOTION GmbH

@@ -1,21 +1,4 @@
----
-name: notebooklm
-description: >
-  Automate Google NotebookLM using the notebooklm-py CLI and Python API.
-  Use this skill whenever the user wants to create or manage NotebookLM notebooks,
-  add sources (URLs, PDFs, YouTube videos, Google Drive docs), ask questions about
-  their documents, or generate any kind of content from notebooks — podcasts, videos,
-  quizzes, flashcards, slide decks, infographics, mind maps, data tables, or reports.
-  Also trigger when the user mentions "NotebookLM", "notebook podcast", "audio overview",
-  "generate a quiz from my docs", "study guide", "briefing doc", or anything that
-  involves feeding documents to AI and getting structured output. This skill covers
-  the full notebooklm-py CLI (shell commands) and Python async API.
-compatibility:
-  tools: [Bash]
-  dependencies: [notebooklm-py]
----
-
-# NotebookLM Skill
+# NotebookLM
 
 Automate Google NotebookLM via `notebooklm-py` — an unofficial Python SDK and CLI
 that exposes features not available in the web UI (batch downloads, PPTX export, etc.).
@@ -47,7 +30,7 @@ notebooklm status   # Shows active notebook and conversation context
 
 ## Core workflow patterns
 
-### Pattern 1 — Research assistant (load docs, Q&A)
+### Pattern 1 - Research assistant (load docs, Q&A)
 ```bash
 notebooklm create "My Research"          # Create notebook
 notebooklm use <notebook_id>             # Set as active (supports partial ID)
@@ -57,14 +40,14 @@ notebooklm ask "What are the key themes?"
 notebooklm ask "Compare the methodologies" --save-as-note
 ```
 
-### Pattern 2 — Generate a podcast from sources
+### Pattern 2 - Generate a podcast from sources
 ```bash
 notebooklm use <notebook_id>
 notebooklm generate audio "deep dive, casual tone" --format deep-dive --wait
 notebooklm download audio ./podcast.mp3
 ```
 
-### Pattern 3 — Build a study kit
+### Pattern 3 - Build a study kit
 ```bash
 notebooklm use <notebook_id>
 notebooklm generate quiz "focus on key concepts" --difficulty hard --wait
@@ -75,13 +58,13 @@ notebooklm download flashcards ./flashcards.md --format markdown
 notebooklm download report ./study-guide.md
 ```
 
-### Pattern 4 — Create a presentation
+### Pattern 4 - Create a presentation
 ```bash
 notebooklm generate slide-deck "executive summary" --format presenter --wait
 notebooklm download slide-deck ./slides.pptx --format pptx
 ```
 
-### Pattern 5 — Auto-research a topic and generate content
+### Pattern 5 - Auto-research a topic and generate content
 ```bash
 notebooklm source add-research "quantum computing" --mode deep --import-all
 notebooklm research wait
@@ -247,22 +230,22 @@ Key client namespaces: `client.notebooks`, `client.sources`, `client.chat`,
 
 ## Tips and edge cases
 
-- **Partial IDs** — All ID arguments support prefix matching. `notebooklm use abc`
+- **Partial IDs** - All ID arguments support prefix matching. `notebooklm use abc`
   matches `abc123def456...`. Very useful; avoids copy-pasting full UUIDs.
 
-- **Generation is async by default** — `generate` commands return immediately unless
+- **Generation is async by default** - `generate` commands return immediately unless
   you pass `--wait`. Use `notebooklm artifact poll <id>` or add `--wait` for blocking.
 
-- **Multiple sources in one command** — Pass `-s <id>` multiple times to limit
+- **Multiple sources in one command** - Pass `-s <id>` multiple times to limit
   generation or chat to specific sources.
 
-- **Unofficial API warning** — This uses undocumented Google APIs. If commands fail
+- **Unofficial API warning** - This uses undocumented Google APIs. If commands fail
   unexpectedly, the API may have changed. Check `pip install --upgrade notebooklm-py`.
 
-- **Rate limits** — Use `--retry N` on generate commands for automatic exponential
+- **Rate limits** - Use `--retry N` on generate commands for automatic exponential
   backoff if you hit rate limits.
 
-- **Language** — Set once with `notebooklm language set <code>` and all subsequent
+- **Language** - Set once with `notebooklm language set <code>` and all subsequent
   generations use that language. Override per-command with `--language`.
 
 ---
@@ -277,4 +260,4 @@ When the user describes a goal (e.g., "turn these PDFs into a podcast"), think t
    report for reading, slide deck for presenting, infographic for visual summary.
 4. **Wait or poll?** For interactive use, `--wait` is simpler. For long jobs, use `--no-wait`
    and check `notebooklm artifact list` or `research status`.
-5. **Save the output.** Always download artifacts after generation — they may expire.
+5. **Save the output.** Always download artifacts after generation - they may expire.
