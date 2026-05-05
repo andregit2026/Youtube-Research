@@ -206,6 +206,8 @@ Videoranking, KI-Analyse und optionalen Deliverables (Karteikarten, Quiz, Podcas
 youtube-research/
 ├── SKILL.md                              - Einstiegspunkt, Routing-Tabelle
 ├── README.md                             - Diese Datei
+├── assets/
+│   └── output-example.png               - Vorschau des generierten HTML-Berichts
 ├── scripts/
 │   └── search_youtube.py                 - yt-dlp Suchskript
 └── references/
